@@ -68,9 +68,6 @@ async function sendMsg(msg, type = "chat") {
 	}
 }
 
-const sendEmbedMsg = async (msg, type = "chat") =>
-	sendMsg({ embeds: [msg] }, type);
-
 module.exports = {
 	setDiscordClient,
 	initChannels,
