@@ -1,12 +1,18 @@
 {
-  "discord": {
-    "embed": {
-      "colors": {
-        "white": "#fff4e6",
-        "red": "#cc2a36",
-        "green": "#77ab59",
-        "yellow": "#ecb939"
-      }
-    }
-  }
+	"discord": {
+		"channels": {
+			"chat": "1477468782749290556",
+			"status": "1477468796024525036",
+			"updates": "1477468821534277845"
+		},
+		"embed": {
+			"colors": {
+				"white": "#fff4e6",
+				"red": "#e74c3c",
+				"green": "#2ecc71",
+				"yellow": "#ecb939",
+				"gray": "#607d8b"
+			}
+		}
+	}
 }

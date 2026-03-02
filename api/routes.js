@@ -3,32 +3,63 @@ const { apiKeyMiddleware } = require("./auth");
 
 const { sendEmbedMsg } = require("../discord/messageService");
 const { createMessage } = require("../discord/embeds");
+const {
+	validateStatusField,
+	updateStatusMsg,
+} = require("../discord/statusService");
 
 function createRouter() {
-    const app = express();
-    app.use(express.json());
+	const app = express();
+	app.use(express.json());
 
-    app.get("/", (req, res) => {
-        res.send("API is up");
-    });
+	app.get("/", (req, res) => {
+		res.send("API is up");
+	});
 
-    // Send message
-    app.post("/send-message", apiKeyMiddleware, async (req, res) => {
-        const {msgHeader, msgContent} = req.body;
+	// Send message
+	app.post("/send-message", apiKeyMiddleware, async (req, res) => {
+		const { msgHeader, msgContent } = req.body;
 
-        if (!msgHeader || !msgContent) {
-            return res.status(400).json({error: "msgHeader and msgContent are required"});
-        }
+		// Validation
+		if (!msgHeader || !msgContent) {
+			return res
+				.status(400)
+				.json({ error: "msgHeader and msgContent are required" });
+		}
 
-        try {
-            await sendEmbedMsg(createMessage(msgHeader, msgContent));
-            return res.status(200).json({message: "Message sent successfully"});
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({error: "Internal server error"});
-        }
-    });
-    return app;
+		// Try to send a message
+		try {
+			await sendEmbedMsg(createMessage(msgHeader, msgContent));
+			return res.status(200).json({ message: "Message sent successfully" });
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({ error: "Internal server error" });
+		}
+	});
+
+	// Update status
+	app.patch("/status", apiKeyMiddleware, async (req, res) => {
+		const { field, value } = req.body;
+
+		// Validation
+		if (!field || !value) {
+			return res.status(400).json({ error: "Field and value are required" });
+		}
+		if (!validateStatusField(field)) {
+			return res.status(400).json({ error: "Field is invalid" });
+		}
+
+		// Try to update status
+		try {
+			await updateStatusMsg(field, value);
+			return res.status(200).json({ message: "Status updates successfully" });
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({ error: "Internal server error" });
+		}
+	});
+
+	return app;
 }
 
 module.exports = { createRouter };
