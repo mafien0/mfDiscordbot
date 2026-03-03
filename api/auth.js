@@ -1,4 +1,4 @@
-function apiKeyMiddleware(req, res, next) {
+export function apiKeyMiddleware(req, res, next) {
 	const clientKey = req.header("x-api-key");
 	const serverKey = process.env.API_KEY;
 
@@ -13,5 +13,3 @@ function apiKeyMiddleware(req, res, next) {
 
 	next();
 }
-
-module.exports = { apiKeyMiddleware };

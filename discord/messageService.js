@@ -1,7 +1,7 @@
 // Hold a reference to the Discord client, set from index.js
 let client = null;
 
-const config = require("../config.json");
+import config from "../config.json" with { type: "json" };
 const channelID = config.discord.channels;
 
 // Channels will be filled on bot login
@@ -13,7 +13,7 @@ const CHANNELS = {
 
 // Get discord client generated in `../index.js`
 // Called after client login
-function setDiscordClient(discordClient) {
+export function setDiscordClient(discordClient) {
 	if (!discordClient) throw new Error("Discord client is required");
 	client = discordClient;
 }
@@ -45,7 +45,7 @@ async function getChannelById(id) {
 
 // Initialize channels for CHANNELS object
 // Called after client login
-async function initChannels() {
+export async function initChannels() {
 	try {
 		CHANNELS.chat = await getChannelById(channelID.chat);
 		CHANNELS.status = await getChannelById(channelID.status);
@@ -58,7 +58,7 @@ async function initChannels() {
 }
 
 // Send messages function
-async function sendMsg(msg, channelType = "chat") {
+export async function sendMsg(msg, channelType = "chat") {
 	if (!msg) throw new Error("No message provided");
 	if (!CHANNELS[channelType]) {
 		throw new Error(`Channel for type "${channelType}" is not initialized`);
@@ -74,11 +74,11 @@ async function sendMsg(msg, channelType = "chat") {
 		throw error;
 	}
 }
-const sendEmbedMsg = async (msg, channelType = "status") =>
+export const sendEmbedMsg = async (msg, channelType = "status") =>
 	sendMsg({ embeds: [msg] }, channelType);
 
 // Wipe messaged util function
-async function wipeMessages(channelType, limit = 100) {
+export async function wipeMessages(channelType, limit = 100) {
 	const channel = CHANNELS[channelType];
 	const messages = await channel.messages.fetch({ limit });
 
@@ -102,11 +102,3 @@ async function wipeMessages(channelType, limit = 100) {
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}
 }
-
-module.exports = {
-	setDiscordClient,
-	initChannels,
-	sendMsg,
-	sendEmbedMsg,
-	wipeMessages,
-};

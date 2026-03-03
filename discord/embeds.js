@@ -1,6 +1,6 @@
-const { EmbedBuilder, resolveColor } = require("discord.js");
+import { EmbedBuilder, resolveColor } from "discord.js";
 
-const config = require("../config.json");
+import config from "../config.json" with { type: "json" };
 const colors = config.discord.embed.colors;
 
 // Embed generator
@@ -16,35 +16,28 @@ function generateEmbed(header, content, color = null) {
 }
 
 // Different types of embeds
-const createMessage = (header, content) =>
+export const createMessage = (header, content) =>
 	generateEmbed(header, content, colors.white || "#ffffff");
-const createError = (header, content) =>
+export const createError = (header, content) =>
 	generateEmbed(header, content, colors.red || "#ff0000");
-const createSuccess = (header, content) =>
+export const createSuccess = (header, content) =>
 	generateEmbed(header, content, colors.green || "#00ff00");
-const createWarning = (header, content) =>
+export const createWarning = (header, content) =>
 	generateEmbed(header, content, colors.yellow || "#ffff00");
 
 // Status embed
-function createStatusEmbed(s) {
-	if (!s) throw new Error("No status specified");
-	const color = s.status === "online" ? colors.green : colors.gray;
+export function createStatusEmbed(status) {
+	if (!status) throw new Error("No status specified");
+	const color = status.status === "online" ? colors.green : colors.gray;
 
-	return new EmbedBuilder().setTitle(s.name).setColor(color).setDescription(`
-		Health: ${s.health}
-		Hunger: ${s.hunger}
-		Ping: ${s.ping}
-		Coords: ${s.coords}
-		Dimension: ${s.dimension}
+	return new EmbedBuilder().setTitle(status.name).setColor(color)
+		.setDescription(`
+		Health: ${status.health}
+		Hunger: ${status.hunger}
+		Ping: ${status.ping}
+		Coords: ${status.coords}
+		Dimension: ${status.dimension}
 		${"-".repeat(30)}
-		${s.info}
+		${status.info}
 		`);
 }
-
-module.exports = {
-	createMessage,
-	createError,
-	createSuccess,
-	createWarning,
-	createStatusEmbed,
-};

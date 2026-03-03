@@ -1,11 +1,11 @@
-require("dotenv").config();
+import "dotenv/config";
 
-const { createStatusMsg } = require("./discord/statusService");
+import { createStatusMsg } from "./discord/statusService.js";
 
-const { createRouter } = require("./api/routes");
-const { createBot } = require("./discord/bot");
+import { createRouter } from "./api/routes.js";
+import { createBot } from "./discord/bot.js";
 
-const { setDiscordClient, initChannels } = require("./discord/messageService");
+import { setDiscordClient, initChannels } from "./discord/messageService.js";
 
 // Create API
 const app = createRouter();

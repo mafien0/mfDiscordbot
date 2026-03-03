@@ -1,14 +1,14 @@
-const express = require("express");
-const { apiKeyMiddleware } = require("./auth");
+import express from "express";
+import { apiKeyMiddleware } from "./auth.js";
 
-const { sendEmbedMsg } = require("../discord/messageService");
-const { createMessage } = require("../discord/embeds");
-const {
+import { sendEmbedMsg } from "../discord/messageService.js";
+import { createMessage } from "../discord/embeds.js";
+import {
 	validateStatusField,
 	updateStatusMsg,
-} = require("../discord/statusService");
+} from "../discord/statusService.js";
 
-function createRouter() {
+export function createRouter() {
 	const app = express();
 	app.use(express.json());
 
@@ -61,5 +61,3 @@ function createRouter() {
 
 	return app;
 }
-
-module.exports = { createRouter };

@@ -1,5 +1,5 @@
-const { createStatusEmbed } = require("./embeds");
-const { sendEmbedMsg, wipeMessages } = require("./messageService");
+import { createStatusEmbed } from "./embeds.js";
+import { sendEmbedMsg, wipeMessages } from "./messageService.js";
 
 let statusMsg;
 
@@ -15,9 +15,9 @@ const status = {
 };
 
 // Validate status field
-const validateStatusField = (field) => field in status;
+export const validateStatusField = (field) => field in status;
 
-async function createStatusMsg() {
+export async function createStatusMsg() {
 	// Delete all old messages in the channel
 	try {
 		await wipeMessages("status");
@@ -43,7 +43,7 @@ async function createStatusMsg() {
 	}
 }
 
-async function updateStatusMsg(field, value) {
+export async function updateStatusMsg(field, value) {
 	status[field] = value;
 
 	if (!statusMsg) {
@@ -58,9 +58,3 @@ async function updateStatusMsg(field, value) {
 		console.error(`Failed to update status message: ${error.message}`);
 	}
 }
-
-module.exports = {
-	validateStatusField,
-	createStatusMsg,
-	updateStatusMsg,
-};

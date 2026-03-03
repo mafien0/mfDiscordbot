@@ -1,6 +1,6 @@
-const { Client, Events, GatewayIntentBits } = require("discord.js");
+import { Client, Events, GatewayIntentBits } from "discord.js";
 
-function createBot() {
+export function createBot() {
 	const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 	client.once(Events.ClientReady, (c) => {
@@ -9,5 +9,3 @@ function createBot() {
 
 	return client;
 }
-
-module.exports = { createBot };
