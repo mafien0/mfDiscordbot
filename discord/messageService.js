@@ -49,29 +49,56 @@ async function initChannels() {
 	}
 }
 
-async function sendMsg(msg, type = "chat") {
+// Send messages
+async function sendMsg(msg, channelType = "chat") {
 	if (!msg) throw new Error("No message provided");
-	if (!CHANNELS[type]) {
-		throw new Error(`Channel for type "${type}" is not initialized`);
+	if (!CHANNELS[channelType]) {
+		throw new Error(`Channel for type "${channelType}" is not initialized`);
 	}
 
 	try {
-		console.log(`Sending message to "${type}" channel`);
-		return await CHANNELS[type].send(msg);
+		console.log(`Sending message to "${channelType}" channel`);
+		return await CHANNELS[channelType].send(msg);
 	} catch (error) {
 		console.error(
-			`Failed to send message to "${type}" channel: ${error.message}`,
+			`Failed to send message to "${channelType}" channel: ${error.message}`,
 		);
 		throw error;
 	}
 }
+const sendEmbedMsg = async (msg, channelType = "status") =>
+	sendMsg({ embeds: [msg] }, channelType);
 
-const sendEmbedMsg = async (msg, type = "chat") =>
-	sendMsg({ embeds: [msg] }, type);
+async function wipeMessages(channelType, limit = 100) {
+	const channel = CHANNELS[channelType];
+	const messages = await channel.messages.fetch({ limit });
+
+	// Split by age
+	// < 14d old
+	const recent = messages.filter(
+		(m) => Date.now() - m.createdTimestamp < 14 * 24 * 60 * 60 * 1000,
+	);
+
+	// > 14d old
+	const old = messages.filter(
+		(m) => Date.now() - m.createdTimestamp >= 14 * 24 * 60 * 60 * 1000,
+	);
+
+	// Bulk delete recent messages
+	if (recent.size > 0) await channel.bulkDelete(recent);
+
+	// Delete old messages one-by-one
+	for (const [, msg] of old) {
+		await msg.delete().catch(console.error);
+		// With .5 second delay to not get rate limited
+		await new Promise((resolve) => setTimeout(resolve, 500));
+	}
+}
 
 module.exports = {
 	setDiscordClient,
 	initChannels,
 	sendMsg,
 	sendEmbedMsg,
+	wipeMessages,
 };
