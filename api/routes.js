@@ -1,7 +1,7 @@
 import express from "express";
 import { apiKeyMiddleware } from "./auth.js";
 
-import { sendEmbedMsg } from "../discord/messageService.js";
+import { sendMsg } from "../discord/messageService.js";
 import { createMessage } from "../discord/embeds.js";
 import {
 	validateStatusField,
@@ -20,20 +20,18 @@ export function createRouter() {
 
 	// Send message
 	app.post("/message/send", apiKeyMiddleware, async (req, res) => {
-		const { msgHeader, msgContent } = req.body;
+		const { content } = req.body;
 		console.log("Got an API req at path '/send-message'");
-		console.log(`With header: ${msgHeader}\n and content: ${msgContent}`);
+		console.log(`With content: ${content}`);
 
 		// Validation
-		if (!msgHeader || !msgContent) {
-			return res
-				.status(400)
-				.json({ error: "msgHeader and msgContent are required" });
+		if (!content) {
+			return res.status(400).json({ error: "Content is required" });
 		}
 
 		// Send a message
 		try {
-			await sendEmbedMsg(createMessage(msgHeader, msgContent));
+			await sendMsg(content);
 			return res.status(200).json({ message: "Message sent successfully" });
 		} catch (error) {
 			console.error(error);

@@ -60,8 +60,10 @@ export async function initChannels() {
 // Send messages function
 export async function sendMsg(msg, channelType = "chat") {
 	if (!msg) throw new Error("No message provided");
+
+	// If channels not yet initialized
 	if (!CHANNELS[channelType]) {
-		throw new Error(`Channel for type "${channelType}" is not initialized`);
+		setTimeout(() => sendMsg(msg, channelType), 1000);
 	}
 
 	try {
