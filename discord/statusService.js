@@ -64,7 +64,7 @@ export async function updateStatusField(field, value) {
 	await updateStatusMsg();
 }
 
-export async function bulkUpdateStatusField(data) {
+export async function bulkUpdateStatus(data) {
 	for (const key of Object.keys(status)) {
 		if (data[key] !== undefined && data[key] !== null) {
 			status[key] = data[key];

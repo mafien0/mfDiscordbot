@@ -6,7 +6,7 @@ import { createMessage } from "../discord/embeds.js";
 import {
 	validateStatusField,
 	updateStatusField,
-	bulkUpdateStatusField,
+	bulkUpdateStatus,
 } from "../discord/statusService.js";
 
 export function createRouter() {
@@ -76,7 +76,7 @@ export function createRouter() {
 
 		// Apply the data
 		try {
-			bulkUpdateStatusField(data);
+			bulkUpdateStatus(data);
 			return res.status(200).json({ message: "Status updates successfully" });
 		} catch (error) {
 			console.error(error);
