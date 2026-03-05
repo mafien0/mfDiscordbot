@@ -41,7 +41,7 @@ export function createRouter() {
 	});
 
 	// Update status
-	app.patch("/status", apiKeyMiddleware, async (req, res) => {
+	app.post("/status/update", apiKeyMiddleware, async (req, res) => {
 		const { field, value } = req.body;
 		console.log("Got an API req at path '/status'");
 		console.log(`With fields: ${field} : ${value} `);
