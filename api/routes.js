@@ -5,7 +5,8 @@ import { sendEmbedMsg } from "../discord/messageService.js";
 import { createMessage } from "../discord/embeds.js";
 import {
 	validateStatusField,
-	updateStatusMsg,
+	updateStatusField,
+	bulkUpdateStatusField,
 } from "../discord/statusService.js";
 
 export function createRouter() {
@@ -30,7 +31,7 @@ export function createRouter() {
 				.json({ error: "msgHeader and msgContent are required" });
 		}
 
-		// Try to send a message
+		// Send a message
 		try {
 			await sendEmbedMsg(createMessage(msgHeader, msgContent));
 			return res.status(200).json({ message: "Message sent successfully" });
@@ -55,9 +56,27 @@ export function createRouter() {
 			return res.status(400).json({ error: "Field is invalid" });
 		}
 
-		// Try to update status
+		// Apply the status
 		try {
-			await updateStatusMsg(field, value);
+			await updateStatusField(field, value);
+			return res.status(200).json({ message: "Status updates successfully" });
+		} catch (error) {
+			console.error(error);
+			return res.status(500).json({ error: "Internal server error" });
+		}
+	});
+
+	app.post("/status/bulk-update", apiKeyMiddleware, (req, res) => {
+		const { data } = req.body;
+
+		// Validation
+		if (!data) {
+			return res.status(400).json({ error: "data is required" });
+		}
+
+		// Apply the data
+		try {
+			bulkUpdateStatusField(data);
 			return res.status(200).json({ message: "Status updates successfully" });
 		} catch (error) {
 			console.error(error);
