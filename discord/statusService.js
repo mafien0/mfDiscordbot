@@ -43,18 +43,32 @@ export async function createStatusMsg() {
 	}
 }
 
-export async function updateStatusMsg(field, value) {
-	status[field] = value;
-
+async function updateStatusMsg() {
+	// If there is no status message, create a new one
 	if (!statusMsg) {
 		await createStatusMsg();
 		return;
 	}
 
+	// If there is, try to update it
 	try {
 		const embed = createStatusEmbed(status);
 		await statusMsg.edit({ embeds: [embed] });
 	} catch (error) {
 		console.error(`Failed to update status message: ${error.message}`);
 	}
+}
+
+export async function updateStatusField(field, value) {
+	status[field] = value;
+	await updateStatusMsg();
+}
+
+export async function bulkUpdateStatusField(data) {
+	for (const key of Object.keys(status)) {
+		if (data[key] !== undefined && data[key] !== null) {
+			status[key] = data[key];
+		}
+	}
+	await updateStatusMsg();
 }
