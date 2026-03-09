@@ -2,7 +2,7 @@ import express from "express";
 import { apiKeyMiddleware } from "./auth.js";
 
 import { sendMsg } from "../discord/messageService.js";
-import { createMessage } from "../discord/embeds.js";
+import { handleUpdates } from "../discord/updateService.js";
 import {
 	validateStatusField,
 	updateStatusField,
@@ -76,6 +76,31 @@ export function createRouter() {
 		try {
 			bulkUpdateStatus(data);
 			return res.status(200).json({ message: "Status updates successfully" });
+		} catch (error) {
+			console.error(error);
+			return res.status(500).json({ error: "Internal server error" });
+		}
+	});
+
+	app.post("/update/new", apiKeyMiddleware, (req, res) => {
+		const { type, info } = req.body;
+		const updateTypes = ["kick", "connect", "reconnect", "death", "action"];
+		const noInfoTypes = ["connect"];
+
+		// Validation
+		if (!type) {
+			return res.status(400).json({ error: "Type is required" });
+		}
+		if (!updateTypes.includes(type)) {
+			return res.status(400).json({ error: "This type doesn't exists" });
+		}
+		if (!info && !noInfoTypes.includes(type)) {
+			return res.status(400).json({ error: "Info is required for this type" });
+		}
+
+		try {
+			handleUpdates(type, info);
+			return res.status(200).json({ message: "Update send succesfully" });
 		} catch (error) {
 			console.error(error);
 			return res.status(500).json({ error: "Internal server error" });
